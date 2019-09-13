@@ -21,7 +21,7 @@ This project is designed to help you make your own projects that interact with t
     console.log( await eterbase.balances() );
     
     // Load api key and secret with string instead
-    await eterbase.auth( "[apikey]", "[secret]" );
+    await eterbase.auth( accountId, apiKey, apiSecret );
     console.log( await eterbase.balance( "BTC" ) );
 } )();
 ```
