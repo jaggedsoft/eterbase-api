@@ -98,7 +98,6 @@
 
     // Places a new order
     exports.order = async ( params = {} ) => {
-        if ( typeof params.type == "undefined" ) params.type = 1;
         let end_params = {
             accountId,
             marketId: marketIds[params.ticker],
@@ -108,6 +107,54 @@
             cost: params.price,
         };
         return signedRequest( '/api/orders', end_params, 'POST' );
+    };
+
+    // Places a new order
+    exports.limitBuy = async ( params = {} ) => {
+        let end_params = {
+            ticker: params.ticker,
+            type: 2,
+            side: 1,
+            qty: params.amount,
+            cost: params.price,
+        };
+        return order( end_params );
+    };
+
+    // Places a new order
+    exports.limitSell = async ( params = {} ) => {
+        let end_params = {
+            ticker: params.ticker,
+            type: 2,
+            side: 2,
+            qty: params.amount,
+            cost: params.price,
+        };
+        return order( end_params );
+    };
+
+    // Places a new order
+    exports.marketBuy = async ( params = {} ) => {
+        let end_params = {
+            ticker: params.ticker,
+            type: 1,
+            side: 1,
+            qty: params.amount,
+            cost: params.price,
+        };
+        return order( end_params );
+    };
+
+    // Places a new order
+    exports.marketSell = async ( params = {} ) => {
+        let end_params = {
+            ticker: params.ticker,
+            type: 1,
+            side: 2,
+            qty: params.amount,
+            cost: params.price,
+        };
+        return order( end_params );
     };
 
     // Cancel order by id
