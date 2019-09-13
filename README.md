@@ -35,8 +35,7 @@ This project is designed to help you make your own projects that interact with t
 
 ## Stargazers over time
 
-[![Stargazers over time](https://starcharts.herokuapp.com/jaggedsoft/node-binance-api.svg)](https://starcharts.herokuapp.com/jaggedsoft/node-binance-api)
-
+[![Stargazers over time](https://starcharts.herokuapp.com/jaggedsoft/eterbase-api.svg)](https://starcharts.herokuapp.com/jaggedsoft/eterbase-api)
 [![Views](http://hits.dwyl.io/jaggedsoft/eterbase-api.svg)](http://hits.dwyl.io/jaggedsoft/eterbase-api)
 [![jaggedsoft on Twitter](https://img.shields.io/twitter/follow/jaggedsoft.svg?style=social)](https://twitter.com/jaggedsoft)
 [![Chartaholic on Twitter](https://img.shields.io/twitter/follow/Chartaholic.svg?style=social)](https://twitter.com/Chartaholic)
