@@ -1,9 +1,9 @@
 ( async () => {
     const crypto = require( 'crypto' );
-    const axios = require( 'axios' ), exports = module.exports;
+    const axios = require( 'axios' );
+    const fs = require( 'fs' ), exports = module.exports;
     const baseURL = "https://api.eterbase.exchange";
-    const accountId = '', key = '', secret = '';
-    const marketIds = [];
+    let accountId = '', key = '', secret = '', marketIds = [];
     const instance = axios.create( {
         headers: {
             'Content-Type': 'application/json',
@@ -98,7 +98,8 @@
 
     // Places a new order
     exports.order = async ( params = {} ) => {
-        let end_params = {
+        if ( typeof params.type == "undefined" ) params.type = 1;
+        let payload = {
             accountId,
             marketId: marketIds[params.ticker],
             type: params.type,
@@ -106,7 +107,7 @@
             qty: params.amount,
             cost: params.price,
         };
-        return signedRequest( '/api/orders', end_params, 'POST' );
+        return signedRequest( '/api/orders', payload, 'POST' );
     };
 
     // Places a new order
