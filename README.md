@@ -16,12 +16,12 @@ This project is designed to help you make your own projects that interact with t
 ( async () => {
     const eterbase = require( "eterbase" );
     
-    // Load apiKey and secret from json:
+    // Load credentials from json: (accountId, key and secret)
     await eterbase.auth( "eterbase-options.json" );
     console.log( await eterbase.balances() );
     
-    // Or set credentials manually:
-    await eterbase.auth( accountId, apiKey, apiSecret );
+    // Or authenticate manually:
+    await eterbase.auth( accountId, key, secret );
     console.log( await eterbase.balance( "BTC" ) );
 } )();
 ```
