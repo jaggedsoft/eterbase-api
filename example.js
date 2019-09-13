@@ -21,4 +21,9 @@
         price: 1,
         type: 1
     } ) );
+    console.log( await eterbase.openOrders( {
+        state: "ACTIVE", // ACTIVE / INACTIVE
+        from: 1560000000000,
+        to: Date.now()
+    } ) );
 } )().catch( e => console.log( e ) );

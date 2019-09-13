@@ -28,13 +28,14 @@
 
     async function signedRequest( endpoint, params = {}, method = 'GET' ) {
         return new Promise( ( resolve, reject ) => {
+            let query = method === 'GET' ? `?${ Object.entries(params).map(([key, val]) => `${ key }=${ val }`).join('&') }` : "";
             let date = new Date().toGMTString();
             let message = 'date: ' + date + '\n' + method.toUpperCase() + ' ' + endpoint + ' HTTP/1.1';
             let signature = crypto.createHmac( 'sha256', secret ).update( message ).digest( 'base64' );
             let sha256 = crypto.createHash( 'sha256' ).update( JSON.stringify( params ), 'utf8' ).digest( 'base64' );
             let authOptions = {
                 method,
-                url: baseURL + endpoint,
+                url: baseURL + endpoint + query,
                 headers: {
                     'Content-Type': 'application/json',
                     'Date': date,
@@ -112,5 +113,10 @@
     // Cancel order by id
     exports.cancelOrder = async ( params = {} ) => {
         return signedRequest( '/api/orders/' + params.orderId, {}, 'DELETE' );
+    };
+
+    // Return open orders
+    exports.openOrders = async ( params = {} ) => {
+        return signedRequest( '/api/accounts/' + accountId + '/orders', params, 'GET' );
     };
 } )();
