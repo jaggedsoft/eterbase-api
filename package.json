@@ -1,0 +1,28 @@
+{
+  "name": "eterbase",
+  "version": "0.0.0",
+  "description": "Eterbase Javascript API https://github.com/jaggedsoft/eterbase-api",
+  "main": "eterbase.js",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "ws": "^6.1.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jaggedsoft/eterbase-api.git"
+  },
+  "keywords": [
+    "eterbase",
+    "cryptocurrency",
+    "api"
+  ],
+  "author": "Jon Eyrick <jaggedsoft@gmail.com> (https://github.com/jaggedsoft)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jaggedsoft/eterbase-api/issues"
+  },
+  "homepage": "https://github.com/jaggedsoft/eterbase",
+  "devDependencies": {
+    "eslint": "^4.19.1"
+  }
+}
