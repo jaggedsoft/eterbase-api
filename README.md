@@ -16,56 +16,56 @@ This project is designed to help you make your own projects that interact with t
 ( async () => {
     const eterbase = require( "eterbase" );
     
-    // Load apikey and secret from json
+    // Load apiKey and secret from json:
     await eterbase.auth( "eterbase-options.json" );
     console.log( await eterbase.balances() );
     
-    // Load api key and secret with string instead
+    // Or set credentials manually:
     await eterbase.auth( accountId, apiKey, apiSecret );
     console.log( await eterbase.balance( "BTC" ) );
 } )();
 ```
 
 ```js
-    // Get list of all market IDs, allowed order types, asset precision and more.
-    console.log( await eterbase.markets() );
-    
-    // Get price of specific asset
-    console.log( await eterbase.quote( {
-        ticker: "ETH-BTC"
-    } ) );
-    
-    // Get total balances
-    console.log(await eterbase.balances());
-    
-    // Limit buy
-    console.log( await eterbase.limitBuy( {
-        ticker: "ETH-BTC",
-        amount: 0.01,
-        price: 1
-    } ) );
-    
-    // Market sell
-    console.log( await eterbase.marketSell( {
-        ticker: "ETH-BTC",
-        amount: 0.01,
-        price: 1
-    } ) );
-    
-    // Check open orders
-    console.log( await eterbase.openOrders( {
-        state: "ACTIVE", // ACTIVE / INACTIVE
-        from: 1560000000000,
-        to: Date.now()
-    } ) );
-    
-    // Download candlestick information
-    console.log( await eterbase.ohlcv( {
-        ticker: "ETH-BTC",
-        interval: 1440,
-        start: 1560000000000,
-        end: 1568322090000
-    } ) );
+// Get list of all market IDs, allowed order types, asset precision and more.
+console.log( await eterbase.markets() );
+
+// Get price of specific asset
+console.log( await eterbase.quote( {
+    ticker: "ETH-BTC"
+} ) );
+
+// Get total balances
+console.log(await eterbase.balances());
+
+// Limit buy
+console.log( await eterbase.limitBuy( {
+    ticker: "ETH-BTC",
+    amount: 0.01,
+    price: 1
+} ) );
+
+// Market sell
+console.log( await eterbase.marketSell( {
+    ticker: "ETH-BTC",
+    amount: 0.01,
+    price: 1
+} ) );
+
+// Check open orders
+console.log( await eterbase.openOrders( {
+    state: "ACTIVE", // ACTIVE / INACTIVE
+    from: 1560000000000,
+    to: Date.now()
+} ) );
+
+// Download candlestick information
+console.log( await eterbase.ohlcv( {
+    ticker: "ETH-BTC",
+    interval: 1440,
+    start: 1560000000000,
+    end: 1568322090000
+} ) );
 ```
 
 ## Stargazers over time
