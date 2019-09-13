@@ -31,6 +31,28 @@ This project is designed to help you make your own projects that interact with t
     console.log( await eterbase.quote( {
         ticker: "ETH-BTC"
     } ) );
+    console.log( await eterbase.limitBuy( {
+        ticker: "ETH-BTC",
+        amount: 0.01,
+        price: 1,
+    } ) );
+    console.log( await eterbase.marketSell( {
+        ticker: "ETH-BTC",
+        amount: 0.01,
+        price: 1,
+    } ) );
+    console.log( await eterbase.openOrders( {
+        state: "ACTIVE", // ACTIVE / INACTIVE
+        from: 1560000000000,
+        to: Date.now()
+    } ) );
+    console.log( await eterbase.ohlcv( {
+        ticker: "ETH-BTC",
+        interval: 1440,
+        start: 1560000000000,
+        end: 1568322090000
+    } ) );
+    console.log(await eterbase.balances());
 ```
 
 ## Stargazers over time
