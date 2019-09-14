@@ -73,4 +73,4 @@ console.log( await eterbase.ohlcv( {
 [![Stargazers over time](https://starcharts.herokuapp.com/jaggedsoft/eterbase-api.svg)](https://starcharts.herokuapp.com/jaggedsoft/eterbase-api)
 [![Views](http://hits.dwyl.io/jaggedsoft/eterbase-api.svg)](http://hits.dwyl.io/jaggedsoft/eterbase-api)
 [![jaggedsoft on Twitter](https://img.shields.io/twitter/follow/jaggedsoft.svg?style=social)](https://twitter.com/jaggedsoft)
-[![Chartaholic on Twitter](https://img.shields.io/twitter/follow/Chartaholic.svg?style=social)](https://twitter.com/Chartaholic)
+[![ETERBASE on Twitter](https://img.shields.io/twitter/follow/ETERBASE.svg?style=social)](https://twitter.com/ETERBASE)
