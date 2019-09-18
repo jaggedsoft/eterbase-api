@@ -28,7 +28,7 @@
 
     async function signedRequest( endpoint, params = {}, method = 'GET' ) {
         return new Promise( ( resolve, reject ) => {
-            let query = method === 'GET' ? `?${ Object.entries(params).map(([key, val]) => `${ key }=${ val }`).join('&') }` : "";
+            let query = method === 'GET' ? `?${Object.entries( params ).map( ( [key, val] ) => `${key}=${val}` ).join( '&' )}` : "";
             let date = new Date().toGMTString();
             let message = 'date: ' + date + '\n' + method.toUpperCase() + ' ' + endpoint + ' HTTP/1.1';
             let signature = crypto.createHmac( 'sha256', secret ).update( message ).digest( 'base64' );
@@ -90,72 +90,73 @@
 
     // My account balances
     exports.balances = async ( params = {} ) => {
-        let end_params = {
-            timestamp: Date.now()
-        };
+        //let payload = {
+        //    timestamp: Date.now()
+        //};
         return signedRequest( '/api/accounts/' + accountId + '/balances', {} );
     };
 
     // Places a new order
-    exports.order = async ( params = {} ) => {
+    exports.order = async function order( params = {} ) {
         if ( typeof params.type == "undefined" ) params.type = 1;
         let payload = {
             accountId,
             marketId: marketIds[params.ticker],
             type: params.type,
             side: params.side,
-            qty: params.amount,
-            cost: params.price,
+            qty: params.amount
         };
+        if ( params.type == 1 ) payload.cost = params.price; // market order
+        else if ( params.type == 2 ) payload.limitPrice = params.price; // limit order
         return signedRequest( '/api/orders', payload, 'POST' );
     };
 
     // Places a new order
     exports.limitBuy = async ( params = {} ) => {
-        let end_params = {
+        let payload = {
             ticker: params.ticker,
             type: 2,
             side: 1,
             qty: params.amount,
-            cost: params.price,
+            price: params.price,
         };
-        return order( end_params );
+        return order( payload );
     };
 
     // Places a new order
     exports.limitSell = async ( params = {} ) => {
-        let end_params = {
+        let payload = {
             ticker: params.ticker,
             type: 2,
             side: 2,
             qty: params.amount,
-            cost: params.price,
+            price: params.price,
         };
-        return order( end_params );
+        return order( payload );
     };
 
     // Places a new order
     exports.marketBuy = async ( params = {} ) => {
-        let end_params = {
+        let payload = {
             ticker: params.ticker,
             type: 1,
             side: 1,
             qty: params.amount,
-            cost: params.price,
+            price: params.price,
         };
-        return order( end_params );
+        return order( payload );
     };
 
     // Places a new order
     exports.marketSell = async ( params = {} ) => {
-        let end_params = {
+        let payload = {
             ticker: params.ticker,
             type: 1,
             side: 2,
             qty: params.amount,
-            cost: params.price,
+            price: params.price,
         };
-        return order( end_params );
+        return order( payload );
     };
 
     // Cancel order by id
