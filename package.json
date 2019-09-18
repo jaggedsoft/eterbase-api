@@ -1,6 +1,6 @@
 {
   "name": "eterbase",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Eterbase Javascript API https://github.com/jaggedsoft/eterbase-api",
   "main": "eterbase.js",
   "dependencies": {
