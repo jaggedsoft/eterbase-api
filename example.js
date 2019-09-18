@@ -2,37 +2,48 @@
     const eterbase = require( './eterbase.js' );
     eterbase.auth( "options.json" );
     await eterbase.initialize();
+    // Get list of all market IDs, allowed order types, asset precision and more:
     console.log( await eterbase.markets() );
+
+    // Get price of a specific asset:
     console.log( await eterbase.quote( {
-        ticker: "ETH-BTC"
+        symbol: "XBASE-EUR"
     } ) );
-    console.log( await eterbase.ohlcv( {
-        ticker: "ETH-BTC",
-        interval: 1440,
-        start: 1560000000000,
-        end: 1568322090000
+
+    // Get total balances:
+    console.log( await eterbase.balances() );
+
+    // Market buy:
+    console.log( await eterbase.marketBuy( {
+        symbol: "XBASE-ETH",
+        cost: "0.006"
     } ) );
-    // console.log(await eterbase.balances());
-    console.log( await eterbase.order( {
-        ticker: "ETH-BTC",
-        side: 1, // 1 buy - 2 sell
-        amount: 0.01,
-        type: 1, // 1 - Market, 2 - Limit, 3 - StopMarket, 4 - StopLimit
-        price: 1,
-    } ) );
+
+    // Limit buy:
     console.log( await eterbase.limitBuy( {
-        ticker: "ETH-BTC",
-        amount: 0.01,
-        price: 1,
+        symbol: "XBASE-ETH",
+        amount: 320,
+        price: 0.00002333
     } ) );
+
+    // Market sell:
     console.log( await eterbase.marketSell( {
-        ticker: "ETH-BTC",
-        amount: 0.01,
-        price: 1,
+        symbol: "ETH-BTC",
+        amount: 0.01
     } ) );
+
+    // Check open orders:
     console.log( await eterbase.openOrders( {
         state: "ACTIVE", // ACTIVE / INACTIVE
         from: 1560000000000,
         to: Date.now()
+    } ) );
+
+    // Download OHLC candlestick information:
+    console.log( await eterbase.ohlcv( {
+        symbol: "ETH-BTC",
+        interval: 1440,
+        start: 1560000000000,
+        end: 1568322090000
     } ) );
 } )().catch( e => console.log( e ) );
