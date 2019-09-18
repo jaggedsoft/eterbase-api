@@ -32,24 +32,29 @@ console.log( await eterbase.markets() );
 
 // Get price of a specific asset:
 console.log( await eterbase.quote( {
-    ticker: "ETH-BTC"
+    symbol: "XBASE-EUR"
 } ) );
 
 // Get total balances:
 console.log( await eterbase.balances() );
 
+// Market buy:
+console.log( await eterbase.marketBuy( {
+    symbol: "XBASE-ETH",
+    cost: "0.006"
+} ) );
+
 // Limit buy:
 console.log( await eterbase.limitBuy( {
-    ticker: "ETH-BTC",
-    amount: 0.01,
-    price: 1
+    symbol: "XBASE-ETH",
+    amount: 320,
+    price: 0.00002333
 } ) );
 
 // Market sell:
 console.log( await eterbase.marketSell( {
-    ticker: "ETH-BTC",
-    amount: 0.01,
-    price: 1
+    symbol: "ETH-BTC",
+    amount: 0.01
 } ) );
 
 // Check open orders:
@@ -61,7 +66,7 @@ console.log( await eterbase.openOrders( {
 
 // Download OHLC candlestick information:
 console.log( await eterbase.ohlcv( {
-    ticker: "ETH-BTC",
+    symbol: "ETH-BTC",
     interval: 1440,
     start: 1560000000000,
     end: 1568322090000
