@@ -97,7 +97,7 @@
     };
 
     // Places a new order
-    exports.order = async function order( params = {} ) {
+    exports.order = async ( params = {} ) => {
         if ( typeof params.type == "undefined" ) params.type = 1;
         let payload = {
             accountId,
@@ -112,51 +112,31 @@
     };
 
     // Places a new order
-    exports.limitBuy = async ( params = {} ) => {
-        let payload = {
-            ticker: params.ticker,
-            type: 2,
-            side: 1,
-            qty: params.amount,
-            price: params.price,
-        };
-        return order( payload );
+    exports.limitBuy = async ( payload = {} ) => {
+        payload.type = 2;
+        payload.side = 1;
+        return exports.order( payload );
     };
 
     // Places a new order
-    exports.limitSell = async ( params = {} ) => {
-        let payload = {
-            ticker: params.ticker,
-            type: 2,
-            side: 2,
-            qty: params.amount,
-            price: params.price,
-        };
-        return order( payload );
+    exports.limitSell = async ( payload = {} ) => {
+        payload.type = 2;
+        payload.side = 2;
+        return exports.order( payload );
     };
 
     // Places a new order
-    exports.marketBuy = async ( params = {} ) => {
-        let payload = {
-            ticker: params.ticker,
-            type: 1,
-            side: 1,
-            qty: params.amount,
-            price: params.price,
-        };
-        return order( payload );
+    exports.marketBuy = async ( payload = {} ) => {
+        payload.type = 1;
+        payload.side = 1;
+        return exports.order( payload );
     };
 
     // Places a new order
-    exports.marketSell = async ( params = {} ) => {
-        let payload = {
-            ticker: params.ticker,
-            type: 1,
-            side: 2,
-            qty: params.amount,
-            price: params.price,
-        };
-        return order( payload );
+    exports.marketSell = async ( payload = {} ) => {
+        payload.type = 1;
+        payload.side = 2;
+        return exports.order( payload );
     };
 
     // Cancel order by id
