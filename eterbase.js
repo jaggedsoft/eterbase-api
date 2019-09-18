@@ -106,8 +106,8 @@
             side: params.side,
             qty: params.amount
         };
-        if ( params.type == 1 ) payload.cost = params.price; // market order
-        else if ( params.type == 2 ) payload.limitPrice = params.price; // limit order
+        if ( params.type == 2 ) payload.limitPrice = params.price; // limit order
+        else if ( params.type == 1 && params.side == 1 ) payload.cost = params.price; // market buy order
         return signedRequest( '/api/orders', payload, 'POST' );
     };
 
@@ -115,6 +115,7 @@
     exports.limitBuy = async ( payload = {} ) => {
         payload.type = 2;
         payload.side = 1;
+        payload.postOnly = false;
         return exports.order( payload );
     };
 
@@ -122,6 +123,7 @@
     exports.limitSell = async ( payload = {} ) => {
         payload.type = 2;
         payload.side = 2;
+        payload.postOnly = false;
         return exports.order( payload );
     };
 
@@ -147,5 +149,10 @@
     // Return open orders
     exports.openOrders = async ( params = {} ) => {
         return signedRequest( '/api/accounts/' + accountId + '/orders', params, 'GET' );
+    };
+
+    // Return filled/open order detail
+    exports.orderDetail = async ( id, params = {} ) => {
+        return signedRequest( '/api/orders/' + id, params, 'GET' );
     };
 } )();
