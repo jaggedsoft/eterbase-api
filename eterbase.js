@@ -80,12 +80,12 @@
 
     // Quote details
     exports.quote = async ( params = {} ) => {
-        return request( '/api/tickers/' + marketIds[params.ticker] + '/ticker', {} );
+        return request( '/api/tickers/' + marketIds[params.symbol] + '/ticker', {} );
     };
 
     // OHLCV Data
     exports.ohlcv = async ( params = {} ) => {
-        return request( '/api/markets/' + marketIds[params.ticker] + '/ohlcv', params );
+        return request( '/api/markets/' + marketIds[params.symbol] + '/ohlcv', params );
     };
 
     // My account balances
@@ -101,7 +101,7 @@
         if ( typeof params.type == "undefined" ) params.type = 1;
         let payload = {
             accountId,
-            marketId: marketIds[params.ticker],
+            marketId: marketIds[params.symbol],
             type: params.type,
             side: params.side,
             qty: params.amount
