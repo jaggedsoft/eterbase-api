@@ -103,11 +103,11 @@
             accountId,
             marketId: marketIds[params.symbol],
             type: params.type,
-            side: params.side,
-            qty: params.amount
+            side: params.side
         };
+        if ( typeof params.amount !== "undefined" ) payload.qty = params.amount;
+        if ( typeof params.cost !== "undefined" ) payload.cost = params.cost;
         if ( params.type == 2 ) payload.limitPrice = params.price; // limit order
-        else if ( params.type == 1 && params.side == 1 ) payload.cost = params.price; // market buy order
         return signedRequest( '/api/orders', payload, 'POST' );
     };
 
