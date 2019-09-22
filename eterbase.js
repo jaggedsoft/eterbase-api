@@ -1,9 +1,14 @@
 ( async () => {
     const crypto = require( 'crypto' );
+    const EventEmitter = require('events');
     const axios = require( 'axios' );
+    const webSocket = require( 'ws' );
     const fs = require( 'fs' ), exports = module.exports;
     const baseURL = "https://api.eterbase.exchange";
     let accountId = '', key = '', secret = '', marketIds = [];
+
+    const emitter = new EventEmitter();
+
     const instance = axios.create( {
         headers: {
             'Content-Type': 'application/json',
@@ -25,6 +30,8 @@
                 } );
         } );
     }
+
+    let dataFeed = undefined;
 
     async function signedRequest( endpoint, params = {}, method = 'GET' ) {
         return new Promise( ( resolve, reject ) => {
@@ -59,9 +66,9 @@
             key = json.key;
             secret = json.secret;
         } else {
-            accountId = _accountId
-            key = _key
-            secret = _secret
+            accountId = _accountId;
+            key = _key;
+            secret = _secret;
         }
     };
 
@@ -71,6 +78,21 @@
         for ( let market of markets ) {
             marketIds[`${market.base}-${market.quote}`] = market.id;
         }
+
+        // const token = await exports.wsToken();
+        dataFeed = new webSocket( 'wss://api.eterbase.exchange/feed'); // ?wstoken=' + token );
+
+        dataFeed.on( 'open', () => {
+            setInterval( () => {
+                dataFeed.ping( "ping" );
+            }, 30000 );
+            emitter.emit("open");
+        } );
+
+        dataFeed.on( 'message', data => {
+            const message = JSON.parse(data);
+            emitter.emit(message.type, data);
+        } );
     };
 
     // List all markets
@@ -107,7 +129,7 @@
         };
         if ( typeof params.amount !== "undefined" ) payload.qty = params.amount;
         if ( typeof params.cost !== "undefined" ) payload.cost = params.cost;
-        if ( params.type == 2 ) payload.limitPrice = params.price; // limit order
+        if ( params.type === 2 ) payload.limitPrice = params.price; // limit order
         return signedRequest( '/api/orders', payload, 'POST' );
     };
 
@@ -155,4 +177,72 @@
     exports.orderDetail = async ( id, params = {} ) => {
         return signedRequest( '/api/orders/' + id, params, 'GET' );
     };
+
+    exports.withdraw = async (params = {}) => {
+        const final_params = {
+            accountId,
+            assetId: params.assetId,
+            amount: params.amount,
+            cryptoAddress: params.address
+        };
+        console.log(accountId);
+        return signedRequest( '/api/v1/accounts/' + accountId + '/withdrawals', final_params, 'POST' );
+    };
+
+    /*
+    ** Websockets
+     */
+    function subscribe(payload, events) {
+        for (const event of events) {
+            emitter.on(event.name, (data) => {
+                if (event.callback) {
+                    event.callback(data);
+                } else {
+                    console.log(data);
+                }
+            });
+        }
+        dataFeed.send(JSON.stringify(payload));
+    }
+
+    exports.orderBookStream = (symbol, onSnapshot, onUpdate) => {
+        if (dataFeed.readyState !== dataFeed.OPEN) {
+            emitter.once("open", () => { exports.orderBookStream(symbol, onSnapshot, onUpdate) });
+        } else {
+            let payload = { "type": "subscribe", "channelId": "order_book", "marketIds": [marketIds[symbol]] };
+            subscribe(payload, [{ name: "ob_snapshot", callback: onSnapshot }, { name: "ob_update", callback: onUpdate }]);
+        }
+    };
+
+    exports.tradeHistoryStream = (symbol, onTrade) => {
+        if (dataFeed.readyState !== dataFeed.OPEN) {
+            emitter.once("open", () => { exports.tradeHistoryStream(symbol, onTrade) });
+        } else {
+            let payload = { "type": "subscribe", "channelId": "trade_history", "marketIds": [marketIds[symbol]] };
+            subscribe(payload, [{ name: "trade", callback: onTrade }]);
+        }
+    };
+
+    exports.ohlcvStream = (symbol, onTick) => {
+        if (dataFeed.readyState !== dataFeed.OPEN) {
+            emitter.once("open", () => { exports.ohlcvStream(symbol, onTick) });
+        } else {
+            let payload = { "type": "subscribe", "channelId": "ohlcv_tick", "marketIds": [marketIds[symbol]] };
+            subscribe(payload, [{ name: "ohlcv", callback: onTick }]);
+        }
+    };
+
+    exports.myOrdersStream = (symbol) => {
+        if (dataFeed.readyState !== dataFeed.OPEN) {
+            emitter.once("open", () => { exports.myOrdersStream(symbol) });
+        } else {
+            let payload = { "type": "subscribe", "channelId": "my_orders", "marketIds": [marketIds[symbol]] };
+            subscribe(payload, ["o_placed", "o_rejected", "o_fill", "o_closed", "o_triggered"]);
+        }
+    };
+
+    exports.wsToken = async () => {
+        return signedRequest('/api/v1/wstoken', {});
+    }
+
 } )();
