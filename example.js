@@ -2,6 +2,7 @@
     const eterbase = require( './eterbase.js' );
     eterbase.auth( "options.json" );
     await eterbase.initialize();
+
     // Get list of all market IDs, allowed order types, asset precision and more:
     console.log( await eterbase.markets() );
 
@@ -46,4 +47,28 @@
         start: 1560000000000,
         end: 1568322090000
     } ) );
+
+    // Withdraw coins from your wallet
+    await eterbase.withdraw({
+        assetId: "LTO",
+        amount: 1,
+        address: "0xdeadbeef",
+    });
+
+    eterbase.orderBookStream("XBASE-ETH",
+        (message) => {
+            console.log("snapshot: " + message)
+        }
+        , (message) => {
+            console.log("update: " + message)
+        });
+    eterbase.ohlcvStream("XBASE-ETH",
+        (message) => {
+            console.log("tick: " + message)
+        });
+    eterbase.tradeHistoryStream("XBASE-ETH",
+        (message) => {
+            console.log("trade: " + message);
+        });
+
 } )().catch( e => console.log( e ) );
