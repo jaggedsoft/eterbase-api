@@ -71,6 +71,27 @@ console.log( await eterbase.ohlcv( {
     start: 1560000000000,
     end: 1568322090000
 } ) );
+
+// Stream orderbook - snapshot is the current state of the order book and update messages is what is actually streamed
+eterbase.orderBookStream("XBASE-ETH",
+    (message) => {
+        console.log("snapshot: " + message)
+    },
+    (message) => {
+        console.log("update: " + message)
+    });
+
+// Stream OHLCV - every new tick triggers the callback
+eterbase.ohlcvStream("XBASE-ETH",
+    (message) => {
+        console.log("tick: " + message)
+    });
+
+// Stream trades - every incoming trade triggers the callback
+eterbase.tradeHistoryStream("XBASE-ETH",
+    (message) => {
+        console.log("trade: " + message);
+    });
 ```
 
 ## Stargazers over time
