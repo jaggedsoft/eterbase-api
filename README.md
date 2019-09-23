@@ -24,6 +24,8 @@ This project is designed to help you make your own projects that interact with t
     await eterbase.auth( accountId, key, secret );
     console.log( await eterbase.balance( "BTC" ) );
 } )();
+
+await eterbase.initialize();
 ```
 
 ```js
@@ -71,6 +73,16 @@ console.log( await eterbase.ohlcv( {
     start: 1560000000000,
     end: 1568322090000
 } ) );
+
+// Get a list of all trades (fills)
+console.log( await eterbase.orderFills({
+    symbol: "XBASE-ETH",
+    side: 1, // 1 - Buy, 2 - Sell
+    offset: 0,
+    limit: 100,
+    from: Date.now() - 7689600000, // Maximum 90days in the past
+    to: Date.now()
+}) );
 
 // Stream orderbook - snapshot is the current state of the order book and update messages is what is actually streamed
 eterbase.orderBookStream("XBASE-ETH",

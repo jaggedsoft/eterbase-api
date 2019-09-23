@@ -11,6 +11,9 @@
         symbol: "XBASE-EUR"
     } ) );
 
+    // Get informations about all markets
+    console.log( await eterbase.tickers() );
+
     // Get total balances:
     console.log( await eterbase.balances() );
 
@@ -54,6 +57,16 @@
         amount: 1,
         address: "0xdeadbeef",
     });
+
+    // Get a list of all trades (fills)
+    console.log( await eterbase.orderFills({
+        symbol: "XBASE-ETH",
+        side: 1, // 1 - Buy, 2 - Sell
+        offset: 0,
+        limit: 100,
+        from: Date.now() - 7689600000, // Maximum 90days in the past
+        to: Date.now()
+    }) );
 
     eterbase.orderBookStream("XBASE-ETH",
         (message) => {
