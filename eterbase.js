@@ -95,9 +95,24 @@
         } );
     };
 
+    // Connectivity test
+    exports.ping = async ( params = {} ) => {
+        return request( '/api/v1/ping', params );
+    };
+
+    // List all assets
+    exports.assets = async ( params = {} ) => {
+        return request( '/api/v1/assets', params );
+    };
+
     // List all markets
     exports.markets = async ( params = {} ) => {
-        return request( '/api/markets', params );
+        return request( '/api/v1/markets', params );
+    };
+
+    // Informations about all markets
+    exports.tickers = async ( params = {} ) => {
+        return request( '/api/v1/tickers', params );
     };
 
     // Quote details
@@ -178,6 +193,19 @@
         return signedRequest( '/api/orders/' + id, params, 'GET' );
     };
 
+    // Get a list of all trades (fills)
+    exports.orderFills = async ( params = {} ) => {
+        const end_params = {
+            symbol: marketIds[params.symbol],
+            side: params.side,
+            offset: params.offset,
+            limit: params.limit,
+            from: params.from,
+            to: params.to
+        };
+        return signedRequest( '/api/v1/accounts/' + accountId + '/fills', end_params, 'GET' );
+    };
+
     exports.withdraw = async (params = {}) => {
         const final_params = {
             accountId,
@@ -185,7 +213,6 @@
             amount: params.amount,
             cryptoAddress: params.address
         };
-        console.log(accountId);
         return signedRequest( '/api/v1/accounts/' + accountId + '/withdrawals', final_params, 'POST' );
     };
 
