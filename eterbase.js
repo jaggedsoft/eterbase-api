@@ -1,8 +1,8 @@
 ( async () => {
-    const crypto = require( 'crypto' );
-    const EventEmitter = require('events');
     const axios = require( 'axios' );
-    const webSocket = require( 'ws' );
+    const crypto = require( 'crypto' );
+    const WebSocket = require( 'ws' );
+    const EventEmitter = require( 'events' );
     const fs = require( 'fs' ), exports = module.exports;
     const baseURL = "https://api.eterbase.exchange";
     let accountId = '', key = '', secret = '', marketIds = [];
@@ -59,7 +59,7 @@
         } );
     }
 
-    exports.auth = ( _accountId, _key = false, _secret = false ) => {
+    exports.auth = async ( _accountId, _key = false, _secret = false ) => {
         if ( _accountId.endsWith( ".json" ) ) {
             let json = JSON.parse( fs.readFileSync( _accountId, "utf8" ) );
             accountId = json.accountId;
@@ -70,6 +70,8 @@
             key = _key;
             secret = _secret;
         }
+        if ( !accountId || !key || !secret ) throw "Invalid accountId, key, or secret";
+        if ( !marketIds.length ) await exports.initialize();
     };
 
     // Initialize instance
@@ -80,18 +82,18 @@
         }
 
         // const token = await exports.wsToken();
-        dataFeed = new webSocket( 'wss://api.eterbase.exchange/feed'); // ?wstoken=' + token );
+        dataFeed = new WebSocket( 'wss://api.eterbase.exchange/feed' ); // ?wstoken=' + token );
 
         dataFeed.on( 'open', () => {
             setInterval( () => {
                 dataFeed.ping( "ping" );
             }, 30000 );
-            emitter.emit("open");
+            emitter.emit( "open" );
         } );
 
         dataFeed.on( 'message', data => {
-            const message = JSON.parse(data);
-            emitter.emit(message.type, data);
+            const message = JSON.parse( data );
+            emitter.emit( message.type, data );
         } );
     };
 
@@ -127,9 +129,6 @@
 
     // My account balances
     exports.balances = async ( params = {} ) => {
-        //let payload = {
-        //    timestamp: Date.now()
-        //};
         return signedRequest( '/api/accounts/' + accountId + '/balances', {} );
     };
 
@@ -195,7 +194,7 @@
 
     // Get a list of all trades (fills)
     exports.orderFills = async ( params = {} ) => {
-        const end_params = {
+        const payload = {
             symbol: marketIds[params.symbol],
             side: params.side,
             offset: params.offset,
@@ -203,10 +202,10 @@
             from: params.from,
             to: params.to
         };
-        return signedRequest( '/api/v1/accounts/' + accountId + '/fills', end_params, 'GET' );
+        return signedRequest( '/api/v1/accounts/' + accountId + '/fills', payload, 'GET' );
     };
 
-    exports.withdraw = async (params = {}) => {
+    exports.withdraw = async ( params = {} ) => {
         const final_params = {
             accountId,
             assetId: params.assetId,
@@ -217,59 +216,59 @@
     };
 
     /*
-    ** Websockets
+    ** WebSockets
      */
-    function subscribe(payload, events) {
-        for (const event of events) {
-            emitter.on(event.name, (data) => {
-                if (event.callback) {
-                    event.callback(data);
+    function subscribe( payload, events ) {
+        for ( const event of events ) {
+            emitter.on( event.name, ( data ) => {
+                if ( event.callback ) {
+                    event.callback( data );
                 } else {
-                    console.log(data);
+                    console.log( data );
                 }
-            });
+            } );
         }
-        dataFeed.send(JSON.stringify(payload));
+        dataFeed.send( JSON.stringify( payload ) );
     }
 
-    exports.orderBookStream = (symbol, onSnapshot, onUpdate) => {
-        if (dataFeed.readyState !== dataFeed.OPEN) {
-            emitter.once("open", () => { exports.orderBookStream(symbol, onSnapshot, onUpdate) });
+    exports.orderBookStream = ( symbol, onSnapshot, onUpdate ) => {
+        if ( dataFeed.readyState !== dataFeed.OPEN ) {
+            emitter.once( "open", () => { exports.orderBookStream( symbol, onSnapshot, onUpdate ) } );
         } else {
             let payload = { "type": "subscribe", "channelId": "order_book", "marketIds": [marketIds[symbol]] };
-            subscribe(payload, [{ name: "ob_snapshot", callback: onSnapshot }, { name: "ob_update", callback: onUpdate }]);
+            subscribe( payload, [{ name: "ob_snapshot", callback: onSnapshot }, { name: "ob_update", callback: onUpdate }] );
         }
     };
 
-    exports.tradeHistoryStream = (symbol, onTrade) => {
-        if (dataFeed.readyState !== dataFeed.OPEN) {
-            emitter.once("open", () => { exports.tradeHistoryStream(symbol, onTrade) });
+    exports.tradeHistoryStream = ( symbol, onTrade ) => {
+        if ( dataFeed.readyState !== dataFeed.OPEN ) {
+            emitter.once( "open", () => { exports.tradeHistoryStream( symbol, onTrade ) } );
         } else {
             let payload = { "type": "subscribe", "channelId": "trade_history", "marketIds": [marketIds[symbol]] };
-            subscribe(payload, [{ name: "trade", callback: onTrade }]);
+            subscribe( payload, [{ name: "trade", callback: onTrade }] );
         }
     };
 
-    exports.ohlcvStream = (symbol, onTick) => {
-        if (dataFeed.readyState !== dataFeed.OPEN) {
-            emitter.once("open", () => { exports.ohlcvStream(symbol, onTick) });
+    exports.ohlcvStream = ( symbol, onTick ) => {
+        if ( dataFeed.readyState !== dataFeed.OPEN ) {
+            emitter.once( "open", () => { exports.ohlcvStream( symbol, onTick ) } );
         } else {
             let payload = { "type": "subscribe", "channelId": "ohlcv_tick", "marketIds": [marketIds[symbol]] };
-            subscribe(payload, [{ name: "ohlcv", callback: onTick }]);
+            subscribe( payload, [{ name: "ohlcv", callback: onTick }] );
         }
     };
 
-    exports.myOrdersStream = (symbol) => {
-        if (dataFeed.readyState !== dataFeed.OPEN) {
-            emitter.once("open", () => { exports.myOrdersStream(symbol) });
+    exports.myOrdersStream = ( symbol ) => {
+        if ( dataFeed.readyState !== dataFeed.OPEN ) {
+            emitter.once( "open", () => { exports.myOrdersStream( symbol ) } );
         } else {
             let payload = { "type": "subscribe", "channelId": "my_orders", "marketIds": [marketIds[symbol]] };
-            subscribe(payload, ["o_placed", "o_rejected", "o_fill", "o_closed", "o_triggered"]);
+            subscribe( payload, ["o_placed", "o_rejected", "o_fill", "o_closed", "o_triggered"] );
         }
     };
 
     exports.wsToken = async () => {
-        return signedRequest('/api/v1/wstoken', {});
+        return signedRequest( '/api/v1/wstoken', {} );
     }
 
 } )();
