@@ -17,15 +17,13 @@ This project is designed to help you make your own projects that interact with t
     const eterbase = require( "eterbase" );
     
     // Load credentials from json: (accountId, key and secret)
-    await eterbase.auth( "eterbase-options.json" );
+    await eterbase.auth( "options.json" );
     console.log( await eterbase.balances() );
     
     // Or authenticate manually:
     await eterbase.auth( accountId, key, secret );
     console.log( await eterbase.balance( "BTC" ) );
 } )();
-
-await eterbase.initialize();
 ```
 
 ```js
@@ -85,25 +83,25 @@ console.log( await eterbase.orderFills({
 }) );
 
 // Stream orderbook - snapshot is the current state of the order book and update messages is what is actually streamed
-eterbase.orderBookStream("XBASE-ETH",
-    (message) => {
-        console.log("snapshot: " + message)
+eterbase.orderBookStream( "XBASE-ETH",
+    message => {
+        console.log( "orderBook snapshot: " + message )
     },
-    (message) => {
-        console.log("update: " + message)
-    });
+    message => {
+        console.log( "orderBook update: " + message )
+    } );
 
 // Stream OHLCV - every new tick triggers the callback
-eterbase.ohlcvStream("XBASE-ETH",
-    (message) => {
-        console.log("tick: " + message)
-    });
+eterbase.ohlcvStream( "XBASE-ETH",
+    message => {
+        console.log( "ohlcvStream: " + message )
+    } );
 
 // Stream trades - every incoming trade triggers the callback
-eterbase.tradeHistoryStream("XBASE-ETH",
-    (message) => {
-        console.log("trade: " + message);
-    });
+eterbase.tradeHistoryStream( "XBASE-ETH",
+    message => {
+        console.log( "tradeHistory: " + message );
+    } );
 ```
 
 ## Stargazers over time
