@@ -1,7 +1,6 @@
 ( async () => {
     const eterbase = require( './eterbase.js' );
-    eterbase.auth( "options.json" );
-    await eterbase.initialize();
+    await eterbase.auth( "options.json" );
 
     // Get list of all market IDs, allowed order types, asset precision and more:
     console.log( await eterbase.markets() );
@@ -68,20 +67,25 @@
         to: Date.now()
     }) );
 
-    eterbase.orderBookStream("XBASE-ETH",
-        (message) => {
-            console.log("snapshot: " + message)
-        }
-        , (message) => {
-            console.log("update: " + message)
-        });
-    eterbase.ohlcvStream("XBASE-ETH",
-        (message) => {
-            console.log("tick: " + message)
-        });
-    eterbase.tradeHistoryStream("XBASE-ETH",
-        (message) => {
-            console.log("trade: " + message);
-        });
+    // Stream orderbook - snapshot is the current state of the order book and update messages is what is actually streamed
+    eterbase.orderBookStream( "XBASE-ETH",
+        message => {
+            console.log( "orderBook snapshot: " + message )
+        },
+        message => {
+            console.log( "orderBook update: " + message )
+        } );
+
+    // Stream OHLCV - every new tick triggers the callback
+    eterbase.ohlcvStream( "XBASE-ETH",
+        message => {
+            console.log( "ohlcvStream: " + message )
+        } );
+
+    // Stream trades - every incoming trade triggers the callback
+    eterbase.tradeHistoryStream( "XBASE-ETH",
+        message => {
+            console.log( "tradeHistory: " + message );
+        } );
 
 } )().catch( e => console.log( e ) );
