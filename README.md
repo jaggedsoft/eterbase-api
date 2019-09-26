@@ -9,7 +9,7 @@
 npm install eterbase
 ```
 
-This project is designed to help you make your own projects that interact with the [Eterbase API](https://developers.eterbase.exchange) in node.js. Eterbase is Europe's Premier Digital Asset Exchange, the first regulated cryptocurrency exchange in Europe with crypto to fiat banking. [Sign up to Eterbase here.](https://www.eterbase.com/)
+This project is designed to help you make your own projects that interact with the [Eterbase API](https://developers.eterbase.exchange) in node.js. Eterbase is Europe's Premier Digital Asset Exchange, the first compliant cryptocurrency exchange in Europe with crypto to fiat banking. [Sign up to Eterbase here.](https://www.eterbase.com/)
 
 #### Getting Started
 ```js
