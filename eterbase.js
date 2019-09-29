@@ -119,17 +119,19 @@
 
     // Quote details
     exports.quote = async ( params = {} ) => {
-        return request( '/api/tickers/' + marketIds[params.symbol] + '/ticker', {} );
+        return request( `/api/tickers/${symbolId( params )}/ticker`, {} );
     };
 
     // OHLCV Data
     exports.ohlcv = async ( params = {} ) => {
-        return request( '/api/markets/' + marketIds[params.symbol] + '/ohlcv', params );
+        return request( `/api/markets/${symbolId( params )}/ohlcv`, params );
     };
+
+
 
     // My account balances
     exports.balances = async ( params = {} ) => {
-        return signedRequest( '/api/accounts/' + accountId + '/balances', {} );
+        return signedRequest( `/api/accounts/${accountId}/balances`, {} );
     };
 
     // Places a new order
@@ -137,7 +139,7 @@
         if ( typeof params.type == "undefined" ) params.type = 1;
         let payload = {
             accountId,
-            marketId: marketIds[params.symbol],
+            marketId: symbolId( params ),
             type: params.type,
             side: params.side
         };
@@ -179,17 +181,17 @@
 
     // Cancel order by id
     exports.cancelOrder = async ( params = {} ) => {
-        return signedRequest( '/api/orders/' + params.orderId, {}, 'DELETE' );
+        return signedRequest( `/api/orders/${params.orderId}`, {}, 'DELETE' );
     };
 
     // Return open orders
     exports.openOrders = async ( params = {} ) => {
-        return signedRequest( '/api/accounts/' + accountId + '/orders', params, 'GET' );
+        return signedRequest( `/api/accounts/${accountId}/orders`, params, 'GET' );
     };
 
     // Return filled/open order detail
     exports.orderDetail = async ( id, params = {} ) => {
-        return signedRequest( '/api/orders/' + id, params, 'GET' );
+        return signedRequest( `/api/orders/${id}`, params, 'GET' );
     };
 
     // Get a list of all trades (fills)
@@ -202,7 +204,7 @@
             from: params.from,
             to: params.to
         };
-        return signedRequest( '/api/v1/accounts/' + accountId + '/fills', payload, 'GET' );
+        return signedRequest( `/api/v1/accounts/${accountId}/fills`, payload, 'GET' );
     };
 
     exports.withdraw = async ( params = {} ) => {
@@ -212,7 +214,7 @@
             amount: params.amount,
             cryptoAddress: params.address
         };
-        return signedRequest( '/api/v1/accounts/' + accountId + '/withdrawals', final_params, 'POST' );
+        return signedRequest( `/api/v1/accounts/${accountId}/withdrawals`, final_params, 'POST' );
     };
 
     /*
@@ -269,6 +271,11 @@
 
     exports.wsToken = async () => {
         return signedRequest( '/api/v1/wstoken', {} );
+    }
+
+    function symbolId( params ) { // Return .id, or id of .symbol
+        if ( typeof params.id !== "undefined" ) return params.id;
+        return marketIds[params.symbol];
     }
 
 } )();
