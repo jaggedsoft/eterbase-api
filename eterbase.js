@@ -80,7 +80,10 @@
         for ( let market of markets ) {
             marketIds[`${market.base}-${market.quote}`] = market.id;
         }
+    };
 
+    // Initialize WebSockets
+    exports.connect = async ( params = {} ) => {
         // const token = await exports.wsToken();
         dataFeed = new WebSocket( 'wss://api.eterbase.exchange/feed' ); // ?wstoken=' + token );
 
