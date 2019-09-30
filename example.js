@@ -1,5 +1,5 @@
 ( async () => {
-    const eterbase = require( './eterbase.js' );
+    const eterbase = require( 'eterbase' );
     await eterbase.auth( "options.json" );
 
     // Get list of all market IDs, allowed order types, asset precision and more:
@@ -40,6 +40,11 @@
         state: "ACTIVE", // ACTIVE / INACTIVE
         from: 1560000000000,
         to: Date.now()
+    } ) );
+    
+    // Cancel open order by id:
+    console.log( await eterbase.cancelOrder( {
+        orderId: '4f873d28-a91d-4926-b52a-43540466ddc9'
     } ) );
 
     // Download OHLC candlestick information:
