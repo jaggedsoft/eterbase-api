@@ -130,8 +130,6 @@
         return request( `/api/markets/${symbolId( params )}/ohlcv`, params );
     };
 
-
-
     // My account balances
     exports.balances = async ( params = {} ) => {
         return signedRequest( `/api/accounts/${accountId}/balances`, {} );
@@ -280,5 +278,11 @@
         if ( typeof params.id !== "undefined" ) return params.id;
         return marketIds[params.symbol];
     }
+    
+    ////////////////////////////////////////
+    // Undocumented and unsupported features
+    exports.crossRates = async ( params = {} ) => {
+        return request( '/api/tickers/cross-rates', params );
+    };
 
 } )();
