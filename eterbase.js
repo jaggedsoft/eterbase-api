@@ -5,7 +5,7 @@
     const EventEmitter = require( 'events' );
     const fs = require( 'fs' ), exports = module.exports;
     const baseURL = "https://api.eterbase.exchange";
-    let accountId = '', key = '', secret = '', marketIds = [];
+    let accountId = '', key = '', secret = '', marketIds = [], dataFeed;
 
     const emitter = new EventEmitter();
 
@@ -30,8 +30,6 @@
                 } );
         } );
     }
-
-    let dataFeed = undefined;
 
     async function signedRequest( endpoint, params = {}, method = 'GET' ) {
         return new Promise( ( resolve, reject ) => {
@@ -84,19 +82,28 @@
 
     // Initialize WebSockets
     exports.connect = async ( params = {} ) => {
-        // const token = await exports.wsToken();
-        dataFeed = new WebSocket( 'wss://api.eterbase.exchange/feed' ); // ?wstoken=' + token );
+        if ( !marketIds.length ) await exports.initialize();
+        let url = 'wss://api.eterbase.exchange/feed';
+        if ( accountId ) {
+            let token = await signedRequest( '/api/v1/wstoken' );
+            url += `?wstoken=${token.wstoken}`;
+        }
+        return new Promise( ( resolve, reject ) => {
+            dataFeed = new WebSocket( url );
 
-        dataFeed.on( 'open', () => {
-            setInterval( () => {
-                dataFeed.ping( "ping" );
-            }, 30000 );
-            emitter.emit( "open" );
-        } );
+            dataFeed.on( 'open', () => {
+                setInterval( () => {
+                    dataFeed.ping( "ping" );
+                }, 30000 );
+                emitter.emit( "open" );
+                console.info( "connected" );
+                resolve();
+            } );
 
-        dataFeed.on( 'message', data => {
-            const message = JSON.parse( data );
-            emitter.emit( message.type, data );
+            dataFeed.on( 'message', data => {
+                const message = JSON.parse( data );
+                emitter.emit( message.type, data );
+            } );
         } );
     };
 
@@ -271,18 +278,17 @@
     };
 
     exports.wsToken = async () => {
-        return signedRequest( '/api/v1/wstoken', {} );
+        return signedRequest( '/api/v1/wstoken' );
     }
 
     function symbolId( params ) { // Return .id, or id of .symbol
         if ( typeof params.id !== "undefined" ) return params.id;
         return marketIds[params.symbol];
     }
-    
+
     ////////////////////////////////////////
     // Undocumented and unsupported features
     exports.crossRates = async ( params = {} ) => {
         return request( '/api/tickers/cross-rates', params );
     };
-
 } )();
