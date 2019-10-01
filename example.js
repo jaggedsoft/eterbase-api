@@ -72,6 +72,10 @@
         to: Date.now()
     }) );
 
+    /////////////////////////////////////
+    // Connect to WebSocket
+    await eterbase.connect();
+    
     // Stream orderbook - snapshot is the current state of the order book and update messages is what is actually streamed
     eterbase.orderBookStream( "XBASE-ETH",
         message => {
