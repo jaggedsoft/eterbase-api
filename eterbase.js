@@ -194,6 +194,15 @@
 
     // Return open orders
     exports.openOrders = async ( params = {} ) => {
+        if ( typeof params.from == "undefined" ) params.from = 1546297200000;
+        if ( typeof params.state == "undefined" ) params.state = "ACTIVE";
+        if ( typeof params.symbol !== "undefined" ) {
+            params.marketId = marketIds[params.symbol];
+            delete params.symbol;
+        }
+        const now = new Date().getTime();
+        if ( typeof params.from == "undefined" ) params.from = now - ( 60 * 60 * 24 * 90 * 1e3 ); // 90 days ago default
+        if ( typeof params.to == "undefined" ) params.to = now;
         return signedRequest( `/api/accounts/${accountId}/orders`, params, 'GET' );
     };
 
@@ -204,15 +213,14 @@
 
     // Get a list of all trades (fills)
     exports.orderFills = async ( params = {} ) => {
-        const payload = {
-            symbol: marketIds[params.symbol],
-            side: params.side,
-            offset: params.offset,
-            limit: params.limit,
-            from: params.from,
-            to: params.to
-        };
-        return signedRequest( `/api/v1/accounts/${accountId}/fills`, payload, 'GET' );
+        if ( typeof params.symbol !== "undefined" ) {
+            params.marketId = marketIds[params.symbol];
+            delete params.symbol;
+        }
+        const now = new Date().getTime();
+        if ( typeof params.from == "undefined" ) params.from = now - ( 60 * 60 * 24 * 90 * 1e3 ); // 90 days ago default
+        if ( typeof params.to == "undefined" ) params.to = now;
+        return signedRequest( `/api/v1/accounts/${accountId}/fills`, params, 'GET' );
     };
 
     exports.withdraw = async ( params = {} ) => {
