@@ -58,11 +58,10 @@ console.log( await eterbase.marketSell( {
 } ) );
 
 // Check open orders:
-console.log( await eterbase.openOrders( {
-    state: "ACTIVE", // ACTIVE / INACTIVE
-    from: 1560000000000,
-    to: Date.now()
-} ) );
+console.log( await eterbase.openOrders( { symbol: "XBASE-ETH" } ) );
+
+// Get a list of all trades (fills)
+console.log( await eterbase.orderFills( { symbol: "XBASE-ETH" } ) );
 
 // Download OHLC candlestick information:
 console.log( await eterbase.ohlcv( {
@@ -71,17 +70,6 @@ console.log( await eterbase.ohlcv( {
     start: 1560000000000,
     end: 1568322090000
 } ) );
-
-// Get a list of all trades (fills)
-console.log( await eterbase.orderFills({
-    symbol: "XBASE-ETH",
-    side: 1, // 1 - Buy, 2 - Sell
-    offset: 0,
-    limit: 100,
-    from: Date.now() - 7689600000, // Maximum 90days in the past
-    to: Date.now()
-}) );
-
 
 ///////////////////////
 // Connect to WebSocket
