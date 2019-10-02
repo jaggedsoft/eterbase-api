@@ -26,6 +26,7 @@ This project is designed to help you make your own projects that interact with t
 } )();
 ```
 
+#### Examples
 ```js
 // Get list of all market IDs, allowed order types, asset precision and more:
 console.log( await eterbase.markets() );
@@ -70,11 +71,12 @@ console.log( await eterbase.ohlcv( {
     start: 1560000000000,
     end: 1568322090000
 } ) );
+```
 
-///////////////////////
+#### WebSocket Examples
+```js
 // Connect to WebSocket
 await eterbase.connect();
-    
 // Stream orderbook - snapshot is the current state of the order book and update messages is what is actually streamed
 eterbase.orderBookStream( "XBASE-ETH",
     message => {
