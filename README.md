@@ -9,7 +9,7 @@
 npm install eterbase
 ```
 
-This project is designed to help you make your own projects that interact with the [Eterbase API](https://developers.eterbase.exchange) in node.js. Eterbase is Europe's Premier Digital Asset Exchange, the first compliant cryptocurrency exchange in Europe with crypto to fiat banking. [Sign up to Eterbase here.](https://www.eterbase.com/)
+This project is designed to help you make your own projects that interact with the [Eterbase API](https://developers.eterbase.exchange) in node.js. Eterbase is Europe's Premier Digital Asset Exchange, the first compliant cryptocurrency exchange in Europe with crypto to fiat banking. [Sign up to Eterbase here.](https://eterbase.exchange/invite/zRGhzCdV)
 
 #### Getting Started
 ```js
@@ -32,9 +32,7 @@ This project is designed to help you make your own projects that interact with t
 console.log( await eterbase.markets() );
 
 // Get price of a specific asset:
-console.log( await eterbase.quote( {
-    symbol: "XBASE-EUR"
-} ) );
+console.log( await eterbase.quote( "XBASE-EUR" ) );
 
 // Get total balances:
 console.log( await eterbase.balances() );
@@ -75,8 +73,8 @@ console.log( await eterbase.ohlcv( {
 
 #### WebSocket Examples
 ```js
-// Connect to WebSocket
 await eterbase.connect();
+
 // Stream orderbook - snapshot is the current state of the order book and update messages is what is actually streamed
 eterbase.orderBookStream( "XBASE-ETH",
     message => {
