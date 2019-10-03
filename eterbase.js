@@ -129,6 +129,7 @@
 
     // Quote details
     exports.quote = async ( params = {} ) => {
+        if ( typeof params === "string" ) params = { symbol: params };
         return request( `/api/tickers/${symbolId( params )}/ticker`, {} );
     };
 
@@ -224,13 +225,13 @@
     };
 
     exports.withdraw = async ( params = {} ) => {
-        const final_params = {
+        const payload = {
             accountId,
             assetId: params.assetId,
             amount: params.amount,
             cryptoAddress: params.address
         };
-        return signedRequest( `/api/v1/accounts/${accountId}/withdrawals`, final_params, 'POST' );
+        return signedRequest( `/api/v1/accounts/${accountId}/withdrawals`, payload, 'POST' );
     };
 
     /*
