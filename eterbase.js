@@ -5,7 +5,7 @@
     const EventEmitter = require( 'events' );
     const fs = require( 'fs' ), exports = module.exports;
     const baseURL = "https://api.eterbase.exchange";
-    let accountId = '', key = '', secret = '', marketIds = [], dataFeed;
+    let accountId = '', key = '', secret = '', marketIds = {}, symbols = {}, dataFeed;
 
     const emitter = new EventEmitter();
 
@@ -69,20 +69,22 @@
             secret = _secret;
         }
         if ( !accountId || !key || !secret ) throw "Invalid accountId, key, or secret";
-        if ( !marketIds.length ) await exports.initialize();
+        if ( !Object.keys( marketIds ).length ) await exports.initialize();
     };
 
     // Initialize instance
     exports.initialize = async ( params = {} ) => {
         let markets = await request( '/api/markets', params );
         for ( let market of markets ) {
-            marketIds[`${market.base}-${market.quote}`] = market.id;
+            let symbol = `${market.base.replace( /-/g, '' )}-${market.quote.replace( /-/g, '' )}`;
+            marketIds[symbol] = market.id;
+            symbols[market.id] = symbol;
         }
     };
 
     // Initialize WebSockets
     exports.connect = async ( params = {} ) => {
-        if ( !marketIds.length ) await exports.initialize();
+        if ( !Object.keys( marketIds ).length ) await exports.initialize();
         let url = 'wss://api.eterbase.exchange/feed';
         if ( accountId ) {
             let token = await signedRequest( '/api/v1/wstoken' );
@@ -123,8 +125,13 @@
     };
 
     // Informations about all markets
-    exports.tickers = async ( params = {} ) => {
-        return request( '/api/v1/tickers', params );
+    exports.tickers = async ( raw = false, params = {} ) => {
+        let tickers = await request( '/api/v1/tickers', params ), output = {};
+        if ( raw ) return tickers;
+        for ( let obj of tickers ) {
+            output[symbols[obj.marketId]] = obj;
+        }
+        return output;
     };
 
     // Get price of a specific asset
