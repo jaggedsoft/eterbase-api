@@ -4,14 +4,14 @@
 
     // Get list of all market IDs, allowed order types, asset precision and more:
     console.log( await eterbase.markets() );
+    
+    // Get price of all assets:
+    console.log( await eterbase.tickers() );
 
     // Get price of a specific asset:
     console.log( await eterbase.ticker( "XBASE-EUR" ) );
-    // You can also get the price with an ID:
+    // You can also get the price using the market ID:
     console.log( await eterbase.ticker( { id: 1 } ) );
-
-    // Get informations about all markets
-    console.log( await eterbase.tickers() );
 
     // Get total balances:
     console.log( await eterbase.balances() );
@@ -96,5 +96,12 @@
         message => {
             console.log( "tradeHistory: " + message );
         } );
+    
+    /////////////////////////////////////
+    // Get a list of all symbols:
+    console.info( Object.values( eterbase.symbols ) );
+
+    // Map from symbols to market ID's
+    console.info( eterbase.marketIds );
 
 } )().catch( e => console.log( e ) );
