@@ -32,7 +32,7 @@ This project is designed to help you make your own projects that interact with t
 console.log( await eterbase.markets() );
 
 // Get price of a specific asset:
-console.log( await eterbase.quote( "XBASE-EUR" ) );
+console.log( await eterbase.ticker( "XBASE-EUR" ) );
 
 // Get total balances:
 console.log( await eterbase.balances() );
@@ -61,6 +61,9 @@ console.log( await eterbase.openOrders( { symbol: "XBASE-ETH" } ) );
 
 // Get a list of all trades (fills)
 console.log( await eterbase.orderFills( { symbol: "XBASE-ETH" } ) );
+
+// Market depth
+console.log( await eterbase.orderBook( { symbol: "XBASE-EUR" } ) );
 
 // Download OHLC candlestick information:
 console.log( await eterbase.ohlcv( {
