@@ -6,9 +6,9 @@
     console.log( await eterbase.markets() );
 
     // Get price of a specific asset:
-    console.log( await eterbase.quote( {
-        symbol: "XBASE-EUR"
-    } ) );
+    console.log( await eterbase.ticker( "XBASE-EUR" ) );
+    // You can also get the price with an ID:
+    console.log( await eterbase.ticker( { id: 1 } ) );
 
     // Get informations about all markets
     console.log( await eterbase.tickers() );
