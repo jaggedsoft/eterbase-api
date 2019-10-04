@@ -208,6 +208,7 @@
 
     // Return open orders
     exports.openOrders = async ( params = {} ) => {
+        if ( typeof params === "string" ) params = { symbol: params };
         if ( typeof params.from == "undefined" ) params.from = 1546297200000;
         if ( typeof params.state == "undefined" ) params.state = "ACTIVE";
         if ( typeof params.symbol !== "undefined" ) {
@@ -227,6 +228,7 @@
 
     // Get a list of all trades (fills)
     exports.orderFills = async ( params = {} ) => {
+        if ( typeof params === "string" ) params = { symbol: params };
         if ( typeof params.symbol !== "undefined" ) {
             params.marketId = marketIds[params.symbol];
             delete params.symbol;
