@@ -127,10 +127,23 @@
         return request( '/api/v1/tickers', params );
     };
 
-    // Quote details
-    exports.quote = async ( params = {} ) => {
+    // Get price of a specific asset
+    exports.ticker = async ( params = {} ) => {
         if ( typeof params === "string" ) params = { symbol: params };
         return request( `/api/tickers/${symbolId( params )}/ticker`, {} );
+    };
+
+    // Quote details (bid/ask.. coming soon)
+    exports.quote = async ( params = {} ) => {
+        throw "BREAKING CHANGE: Quote was renamed to ticker!";
+        //if ( typeof params === "string" ) params = { symbol: params };
+        //return request( `/api/markets/${symbolId( params )}/quote`, {} );
+    };
+
+    // Market Depth
+    exports.orderBook = async ( params = {} ) => {
+        if ( typeof params === "string" ) params = { symbol: params };
+        return request( `/api/markets/${symbolId( params )}/order-book`, params );
     };
 
     // OHLCV Data
@@ -138,12 +151,12 @@
         return request( `/api/markets/${symbolId( params )}/ohlcv`, params );
     };
 
-    // My account balances
+    // Account balances
     exports.balances = async ( params = {} ) => {
         return signedRequest( `/api/accounts/${accountId}/balances`, {} );
     };
 
-    // Places a new order
+    // Place a new order
     exports.order = async ( params = {} ) => {
         if ( typeof params.type == "undefined" ) params.type = 1;
         let payload = {
@@ -158,7 +171,7 @@
         return signedRequest( '/api/orders', payload, 'POST' );
     };
 
-    // Places a new order
+    // Limit buy
     exports.limitBuy = async ( payload = {} ) => {
         payload.type = 2;
         payload.side = 1;
@@ -166,7 +179,7 @@
         return exports.order( payload );
     };
 
-    // Places a new order
+    // Limit sell
     exports.limitSell = async ( payload = {} ) => {
         payload.type = 2;
         payload.side = 2;
@@ -174,14 +187,14 @@
         return exports.order( payload );
     };
 
-    // Places a new order
+    // Market buy
     exports.marketBuy = async ( payload = {} ) => {
         payload.type = 1;
         payload.side = 1;
         return exports.order( payload );
     };
 
-    // Places a new order
+    // Market sell
     exports.marketSell = async ( payload = {} ) => {
         payload.type = 1;
         payload.side = 2;
