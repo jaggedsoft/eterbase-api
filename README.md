@@ -28,14 +28,17 @@ This project is designed to help you make your own projects that interact with t
 
 #### Examples
 ```js
-// Get list of all market IDs, allowed order types, asset precision and more:
-console.log( await eterbase.markets() );
+// Get all actively trading symbols:
+console.log( await eterbase.symbols() );
 
 // Get price of all assets:
 console.log( await eterbase.tickers() );
 
 // Get price of a specific asset:
 console.log( await eterbase.ticker( "XBASE-EUR" ) );
+
+// Get all market IDs, asset precision, minimum orders and allowed order types:
+console.log( await eterbase.markets() );
 
 // Get total balances:
 console.log( await eterbase.balances() );
@@ -75,9 +78,6 @@ console.log( await eterbase.ohlcv( {
     start: 1560000000000,
     end: 1568322090000
 } ) );
-
-// Get a list of all symbols:
-console.info( Object.values( eterbase.symbols ) );
 ```
 
 #### WebSocket Examples
