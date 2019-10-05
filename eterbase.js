@@ -5,7 +5,7 @@
     const EventEmitter = require( 'events' );
     const fs = require( 'fs' ), exports = module.exports;
     const baseURL = "https://api.eterbase.exchange";
-    let accountId = '', key = '', secret = '', marketIds = {}, symbols = {}, dataFeed;
+    let accountId = '', key = '', secret = '', marketIds = {}, symbols = {}, activeSymbols = {}, dataFeed;
 
     const emitter = new EventEmitter();
 
@@ -69,22 +69,28 @@
             secret = _secret;
         }
         if ( !accountId || !key || !secret ) throw "Invalid accountId, key, or secret";
-        if ( !Object.keys( marketIds ).length ) await exports.initialize();
+        if ( !Object.keys( marketIds ).length ) await exports.symbols();
     };
 
-    // Initialize instance
-    exports.initialize = async ( params = {} ) => {
+    // Update marketIds and symbols. Returns all active trading symbols
+    exports.symbols = async ( params = {} ) => {
         let markets = await request( '/api/markets', params );
         for ( let market of markets ) {
-            let symbol = `${market.base.replace( /-/g, '' )}-${market.quote.replace( /-/g, '' )}`;
+            let symbol = getSymbol( market );
             marketIds[symbol] = market.id;
             symbols[market.id] = symbol;
+            if ( market.state !== "Trading" ) {
+                delete activeSymbols[market.id];
+                continue;
+            }
+            activeSymbols[market.id] = symbol;
         }
+        return Object.values( activeSymbols );
     };
 
     // Initialize WebSockets
     exports.connect = async ( params = {} ) => {
-        if ( !Object.keys( marketIds ).length ) await exports.initialize();
+        if ( !Object.keys( marketIds ).length ) await exports.symbols();
         let url = 'wss://api.eterbase.exchange/feed';
         if ( accountId ) {
             let token = await signedRequest( '/api/v1/wstoken' );
@@ -121,13 +127,20 @@
 
     // List all markets
     exports.markets = async ( params = {} ) => {
-        return request( '/api/v1/markets', params );
+        let markets = await request( '/api/v1/markets', params ), output = {};
+        if ( typeof params.raw !== "undefined" && params.raw ) return markets;
+        for ( let market of markets ) {
+            let symbol = getSymbol( market );
+            delete market.symbol;
+            output[symbol] = market;
+        }
+        return output;
     };
 
     // Informations about all markets
-    exports.tickers = async ( raw = false, params = {} ) => {
+    exports.tickers = async ( params = {} ) => {
         let tickers = await request( '/api/v1/tickers', params ), output = {};
-        if ( raw ) return tickers;
+        if ( typeof params.raw !== "undefined" && params.raw ) return tickers;
         for ( let obj of tickers ) {
             output[symbols[obj.marketId]] = obj;
         }
@@ -312,10 +325,17 @@
         return signedRequest( '/api/v1/wstoken' );
     }
 
+    function getSymbol( market ) { // Return ETH-USDT instead of ETHUSDT, and XBASEB-BTC instead of XBASE-B-BTC
+        return `${market.base.replace( /-/g, '' )}-${market.quote.replace( /-/g, '' )}`;
+    }
     function symbolId( params ) { // Return .id, or id of .symbol
         if ( typeof params.id !== "undefined" ) return params.id;
         return marketIds[params.symbol];
     }
+
+    exports.marketIds = marketIds;
+    exports.allSymbols = symbols;
+    exports.activeSymbols = activeSymbols;
 
     ////////////////////////////////////////
     // Undocumented and unsupported features
