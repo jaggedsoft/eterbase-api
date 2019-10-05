@@ -1,12 +1,17 @@
 ( async () => {
     const eterbase = require( 'eterbase' );
     await eterbase.auth( "options.json" );
+    
+    // Get list of all actively trading symbols:
+    console.log( await eterbase.symbols() );
 
     // Get list of all market IDs, allowed order types, asset precision and more:
-    console.log( await eterbase.markets() );
+    let market = await eterbase.markets();
+    console.log( market["XBASE-ETH"] );
     
     // Get price of all assets:
-    console.log( await eterbase.tickers() );
+    let ticker = await eterbase.tickers();
+    console.log( ticker["ETH-USDT"] );
 
     // Get price of a specific asset:
     console.log( await eterbase.ticker( "XBASE-EUR" ) );
@@ -98,8 +103,8 @@
         } );
     
     /////////////////////////////////////
-    // Get a list of all symbols:
-    console.info( Object.values( eterbase.symbols ) );
+    // Get a list of all symbols: (including ones with trading disabled)
+    console.info( Object.values( eterbase.allSymbols ) ); // or use Object.keys( await eterbase.markets() ) );
 
     // Map from symbols to market ID's
     console.info( eterbase.marketIds );
