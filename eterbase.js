@@ -153,9 +153,14 @@
         return request( `/api/tickers/${symbolId( params )}/ticker`, {} );
     };
 
-    // Quote details (bid/ask.. coming soon)
+    // Quote details (best bid/ask)
     exports.quote = async ( params = {} ) => {
-        throw "BREAKING CHANGE: Quote was renamed to ticker!";
+        let book = await exports.orderBook( params );
+        book.bids.sort( ( a, b ) => { return b[0] - a[0] } );
+        book.asks.sort( ( a, b ) => { return a[0] - b[0] } );
+        let bid = book.bids[0][0], ask = book.asks[0][0];
+        return { bid, ask };
+        //Official endpoint coming soon:
         //if ( typeof params === "string" ) params = { symbol: params };
         //return request( `/api/markets/${symbolId( params )}/quote`, {} );
     };
