@@ -76,6 +76,19 @@
         from: Date.now() - 7689600000, // Maximum 90days in the past
         to: Date.now()
     }) );
+    
+    // Cancel all orders
+    async function cancelAll() {
+        let open = await eterbase.openOrders();
+        for ( let obj of open ) {
+            try {
+                console.info( `..${obj.id}` );
+                await eterbase.cancelOrder( { orderId: obj.id } );
+            } catch ( error ) {
+                console.warn( error );
+            }
+        }
+    }
 
     /////////////////////////////////////
     // Connect to WebSocket
