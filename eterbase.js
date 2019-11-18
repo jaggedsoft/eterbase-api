@@ -5,10 +5,11 @@
     const EventEmitter = require( 'events' );
     const fs = require( 'fs' ), exports = module.exports;
     const baseURL = "https://api.eterbase.exchange";
-    let accountId = '', key = '', secret = '', marketIds = {}, symbols = {}, activeSymbols = {}, dataFeed;
+    let accountId = '', key = '', secret = '', dataFeed;
+    let marketIds = {}, symbols = {}, activeSymbols = {}, minimumCost = {}, minimumQty = {};
 
+    process.on( 'unhandledRejection', up => { throw up } );
     const emitter = new EventEmitter();
-
     const instance = axios.create( {
         headers: {
             'Content-Type': 'application/json',
@@ -33,9 +34,9 @@
 
     async function signedRequest( endpoint, params = {}, method = 'GET' ) {
         return new Promise( ( resolve, reject ) => {
-            let query = method === 'GET' ? `?${Object.entries( params ).map( ( [key, val] ) => `${key}=${val}` ).join( '&' )}` : "";
             let date = new Date().toGMTString();
-            let message = 'date: ' + date + '\n' + method.toUpperCase() + ' ' + endpoint + ' HTTP/1.1';
+            let query = method === 'GET' ? `?${Object.entries( params ).map( ( [key, val] ) => `${key}=${val}` ).join( '&' )}` : "";
+            let message = `date: ${date}\n${method.toUpperCase()} ${endpoint} HTTP/1.1`;
             let signature = crypto.createHmac( 'sha256', secret ).update( message ).digest( 'base64' );
             let sha256 = crypto.createHash( 'sha256' ).update( JSON.stringify( params ), 'utf8' ).digest( 'base64' );
             let authOptions = {
@@ -45,14 +46,14 @@
                     'Content-Type': 'application/json',
                     'Date': date,
                     'Digest': 'SHA-256=' + sha256,
-                    'Authorization': 'hmac username="' + key + '",algorithm="hmac-sha256",headers="date request-line",signature="' + signature + '"'
+                    'Authorization': `hmac username="${key}",algorithm="hmac-sha256",headers="date request-line",signature="${signature}"`
                 },
                 data: params,
             };
             return axios( authOptions ).then( response => {
                 resolve( response.data );
             } ).catch( error => {
-                if ( error.response ) console.warn( error.response.data );
+                if ( error.response ) reject( error.response.data );
             } );
         } );
     }
@@ -77,6 +78,8 @@
         let markets = await request( '/api/markets', params );
         for ( let market of markets ) {
             let symbol = getSymbol( market );
+            minimumCost[symbol] = market.tradingRules.find( a => a.attribute == 'Cost' && a.condition == 'Min' ).value;
+            minimumQty[symbol] = market.tradingRules.find( a => a.attribute == 'Qty' && a.condition == 'Min' ).value;
             marketIds[symbol] = market.id;
             symbols[market.id] = symbol;
             if ( market.state !== "Trading" ) {
@@ -308,6 +311,15 @@
         }
     };
 
+    exports.myOrdersStream = ( symbol, onOrder ) => {
+        if ( dataFeed.readyState !== dataFeed.OPEN ) {
+            emitter.once( "open", () => { exports.myOrdersStream( symbol, onTrade ) } );
+        } else {
+            let payload = { "type": "subscribe", "channelId": "my_orders", "marketIds": [marketIds[symbol]] };
+            subscribe( payload, [{ name: "my_orders", callback: onOrder }] );
+        }
+    };
+
     exports.ohlcvStream = ( symbol, onTick ) => {
         if ( dataFeed.readyState !== dataFeed.OPEN ) {
             emitter.once( "open", () => { exports.ohlcvStream( symbol, onTick ) } );
@@ -341,6 +353,8 @@
     exports.marketIds = marketIds;
     exports.allSymbols = symbols;
     exports.activeSymbols = activeSymbols;
+    exports.minimumCost = minimumCost;
+    exports.minimumQty = minimumQty;
 
     ////////////////////////////////////////
     // Undocumented and unsupported features
