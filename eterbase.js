@@ -313,7 +313,7 @@
 
     exports.myOrdersStream = ( symbol, onOrder ) => {
         if ( dataFeed.readyState !== dataFeed.OPEN ) {
-            emitter.once( "open", () => { exports.myOrdersStream( symbol, onTrade ) } );
+            emitter.once( "open", () => { exports.myOrdersStream( symbol, onOrder ) } );
         } else {
             let payload = { "type": "subscribe", "channelId": "my_orders", "marketIds": [marketIds[symbol]] };
             subscribe( payload, [{ name: "my_orders", callback: onOrder }] );
