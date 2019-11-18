@@ -104,6 +104,12 @@ eterbase.tradeHistoryStream( "XBASE-ETH",
     message => {
         console.log( "tradeHistory: " + message );
     } );
+    
+// Stream of new orders
+eterbase.myOrdersStream( "XBASE-ETH",
+    message => {
+        console.log( "myOrders: " + message );
+    } );
 ```
 
 ## Stargazers over time
