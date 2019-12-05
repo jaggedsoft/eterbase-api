@@ -8,7 +8,7 @@
     let accountId = '', key = '', secret = '', dataFeed;
     let marketIds = {}, symbols = {}, activeSymbols = {}, minimumCost = {}, minimumQty = {};
 
-    process.on( 'unhandledRejection', up => { throw up } );
+    //process.on( 'unhandledRejection', up => { throw up } );
     const emitter = new EventEmitter();
     const instance = axios.create( {
         headers: {
@@ -347,6 +347,7 @@
     }
     function symbolId( params ) { // Return .id, or id of .symbol
         if ( typeof params.id !== "undefined" ) return params.id;
+        if ( typeof marketIds[params.symbol] === "undefined" ) throw `${params.symbol} unknown marketId!`;
         return marketIds[params.symbol];
     }
 
