@@ -24,5 +24,6 @@
   "homepage": "https://github.com/jaggedsoft/eterbase",
   "devDependencies": {
     "eslint": "^4.19.1"
-  }
+  },
+  "publishConfig": { "registry": "https://npm.pkg.github.com/" }
 }
